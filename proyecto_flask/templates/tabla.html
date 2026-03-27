@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Usuarios</h2>
+
+<table>
+<tr>
+    <th>Nombre</th>
+    <th>Apellidos</th>
+    <th>Edad</th>
+    <th>Teléfono (País)</th>
+    <th>Email</th>
+    <th>Acciones</th>
+</tr>
+
+{% for u in usuarios %}
+<tr>
+    <td>{{ u.nombre }}</td>
+    <td>{{ u.apellidos }}</td>
+    <td>{{ u.edad }}</td>
+    <td>{{ u.telefono }} ({{ u.pais }})</td>
+    <td>{{ u.email }}</td>
+    <td>
+        <a href="/editar/{{ u.id }}">Editar</a>
+        <a href="/eliminar/{{ u.id }}" onclick="return confirm('¿Seguro?')">Eliminar</a>
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+{% endblock %}

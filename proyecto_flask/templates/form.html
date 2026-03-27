@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{% if usuario %}Editar Usuario{% else %}Registro de Usuario{% endif %}</h2>
+
+{% if errores %}
+<div class="error-box">
+    <ul>
+    {% for error in errores %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="post" class="form-container">
+    <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" id="nombre" value="{{ datos.nombre if datos else (usuario.nombre if usuario else '') }}" required pattern="[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+" placeholder="Ingresa tu nombre" title="Solo se permiten letras">
+        <span class="error-message" id="error-nombre"></span>
+    </div>
+    <div class="form-group">
+        <label for="apellidos">Apellidos:</label>
+        <input type="text" name="apellidos" id="apellidos" value="{{ datos.apellidos if datos else (usuario.apellidos if usuario else '') }}" required pattern="[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+" placeholder="Ingresa tus apellidos" title="Solo se permiten letras">
+        <span class="error-message" id="error-apellidos"></span>
+    </div>
+    <div class="form-group">
+        <label for="edad">Edad:</label>
+        <input type="number" name="edad" id="edad" value="{{ datos.edad if datos else (usuario.edad if usuario else '') }}" required placeholder="Ingresa tu edad">
+        <span class="error-message" id="error-edad"></span>
+    </div>
+    <input type="hidden" name="prefijo" id="prefijo" value="{{ datos.prefijo if datos else (usuario.telefono.split(' ',1)[0] if usuario and ' ' in usuario.telefono else '') }}">
+    <div class="form-group">
+        <label for="pais">País:</label>
+        <select name="pais" id="pais" required>
+            <option value="" disabled {% if not (datos and datos.prefijo) and not (usuario and usuario.telefono) %}selected{% endif %}>Seleccionar país</option>
+            <option value="+34|9" {% if (datos and datos.prefijo == '+34') or (usuario and usuario.telefono and usuario.telefono.startswith('+34')) %}selected{% endif %}>España (+34) - 9 dígitos</option>
+            <option value="+1|10" {% if (datos and datos.prefijo == '+1') or (usuario and usuario.telefono and usuario.telefono.startswith('+1')) %}selected{% endif %}>USA/Canadá (+1) - 10 dígitos</option>
+            <option value="+44|11" {% if (datos and datos.prefijo == '+44') or (usuario and usuario.telefono and usuario.telefono.startswith('+44')) %}selected{% endif %}>Reino Unido (+44) - 11 dígitos</option>
+            <option value="+33|9" {% if (datos and datos.prefijo == '+33') or (usuario and usuario.telefono and usuario.telefono.startswith('+33')) %}selected{% endif %}>Francia (+33) - 9 dígitos</option>
+            <option value="+49|11" {% if (datos and datos.prefijo == '+49') or (usuario and usuario.telefono and usuario.telefono.startswith('+49')) %}selected{% endif %}>Alemania (+49) - 11 dígitos</option>
+            <option value="+39|10" {% if (datos and datos.prefijo == '+39') or (usuario and usuario.telefono and usuario.telefono.startswith('+39')) %}selected{% endif %}>Italia (+39) - 10 dígitos</option>
+            <option value="+31|9" {% if (datos and datos.prefijo == '+31') or (usuario and usuario.telefono and usuario.telefono.startswith('+31')) %}selected{% endif %}>Países Bajos (+31) - 9 dígitos</option>
+            <option value="+43|10" {% if (datos and datos.prefijo == '+43') or (usuario and usuario.telefono and usuario.telefono.startswith('+43')) %}selected{% endif %}>Austria (+43) - 10 dígitos</option>
+            <option value="+41|9" {% if (datos and datos.prefijo == '+41') or (usuario and usuario.telefono and usuario.telefono.startswith('+41')) %}selected{% endif %}>Suiza (+41) - 9 dígitos</option>
+            <option value="+55|11" {% if (datos and datos.prefijo == '+55') or (usuario and usuario.telefono and usuario.telefono.startswith('+55')) %}selected{% endif %}>Brasil (+55) - 11 dígitos</option>
+            <option value="+52|10" {% if (datos and datos.prefijo == '+52') or (usuario and usuario.telefono and usuario.telefono.startswith('+52')) %}selected{% endif %}>México (+52) - 10 dígitos</option>
+            <option value="+54|10" {% if (datos and datos.prefijo == '+54') or (usuario and usuario.telefono and usuario.telefono.startswith('+54')) %}selected{% endif %}>Argentina (+54) - 10 dígitos</option>
+            <option value="+56|9" {% if (datos and datos.prefijo == '+56') or (usuario and usuario.telefono and usuario.telefono.startswith('+56')) %}selected{% endif %}>Chile (+56) - 9 dígitos</option>
+            <option value="+57|10" {% if (datos and datos.prefijo == '+57') or (usuario and usuario.telefono and usuario.telefono.startswith('+57')) %}selected{% endif %}>Colombia (+57) - 10 dígitos</option>
+            <option value="+51|9" {% if (datos and datos.prefijo == '+51') or (usuario and usuario.telefono and usuario.telefono.startswith('+51')) %}selected{% endif %}>Perú (+51) - 9 dígitos</option>
+            <option value="+61|9" {% if (datos and datos.prefijo == '+61') or (usuario and usuario.telefono and usuario.telefono.startswith('+61')) %}selected{% endif %}>Australia (+61) - 9 dígitos</option>
+            <option value="+81|10" {% if (datos and datos.prefijo == '+81') or (usuario and usuario.telefono and usuario.telefono.startswith('+81')) %}selected{% endif %}>Japón (+81) - 10 dígitos</option>
+            <option value="+86|11" {% if (datos and datos.prefijo == '+86') or (usuario and usuario.telefono and usuario.telefono.startswith('+86')) %}selected{% endif %}>China (+86) - 11 dígitos</option>
+            <option value="+91|10" {% if (datos and datos.prefijo == '+91') or (usuario and usuario.telefono and usuario.telefono.startswith('+91')) %}selected{% endif %}>India (+91) - 10 dígitos</option>
+            <option value="+82|10" {% if (datos and datos.prefijo == '+82') or (usuario and usuario.telefono and usuario.telefono.startswith('+82')) %}selected{% endif %}>Corea del Sur (+82) - 10 dígitos</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="telefono">Teléfono:</label>
+        <div class="phone-input-wrapper">
+            <span id="prefijo-display">{{ datos.prefijo if datos else (usuario.telefono.split(' ',1)[0] if usuario and ' ' in usuario.telefono else '') }}</span>
+            <input type="tel" name="telefono" id="telefono" value="{{ datos.telefono if datos else (usuario.telefono.split(' ',1)[1] if usuario and ' ' in usuario.telefono else (usuario.telefono if usuario else '')) }}" required maxlength="14" placeholder="600-123-456">
+            <span id="digits-info" style="font-size: 12px; color: #999; margin-left: 5px;">(9 dígitos)</span>
+        </div>
+        <span class="error-message" id="error-telefono"></span>
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" value="{{ datos.email if datos else (usuario.email if usuario else '') }}" required placeholder="ejemplo@dominio.com" title="Introduce una dirección de correo electrónico válido, por ejemplo: usuario@ejemplo.com">
+        <span class="error-message" id="error-email"></span>
+    </div>
+    <div class="form-group">
+        <label for="password">Contraseña:</label>
+        <input type="password" name="password" id="password" {% if not usuario %}required{% endif %} placeholder="{% if usuario %}Dejar en blanco para mantener la misma{% else %}Ingresa una contraseña{% endif %}">
+        <div id="password-requirements" style="font-size: 12px; color: #666; margin-top: 5px;">
+            Requisitos: Mínimo 8 caracteres, al menos una letra y un número.
+        </div>
+        <span class="error-message" id="error-password"></span>
+    </div>
+    <br>
+    <input type="submit" value="{% if usuario %}Actualizar{% else %}Guardar{% endif %}">
+</form>
+
+<script>
+    // Función para capitalizar nombres
+    function capitalize(str) {
+        return str.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    // Permitir solo letras en nombre
+    document.getElementById('nombre').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/[^a-zA-ZáéíóúñÁÉÍÓÚÑ\s]/g, '');
+    });
+
+    // Permitir solo letras en apellidos
+    document.getElementById('apellidos').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/[^a-zA-ZáéíóúñÁÉÍÓÚÑ\s]/g, '');
+    });
+
+    // Configuración de países y sus formatos de teléfono
+    const countryFormats = {
+        '+34': { digits: 9, format: '###-###-###' },      // España
+        '+1': { digits: 10, format: '(###) ###-####' },   // USA/Canadá
+        '+44': { digits: 11, format: '#### ### ###' },    // Reino Unido
+        '+33': { digits: 9, format: '# ## ## ## ##' },    // Francia
+        '+49': { digits: 11, format: '### #########' },   // Alemania
+        '+39': { digits: 10, format: '### ### ####' },    // Italia
+        '+31': { digits: 9, format: '# #### ####' },      // Países Bajos
+        '+43': { digits: 10, format: '### #######' },     // Austria
+        '+41': { digits: 9, format: '## ### ## ##' },     // Suiza
+        '+55': { digits: 11, format: '(##) #####-####' }, // Brasil
+        '+52': { digits: 10, format: '## #### ####' },    // México
+        '+54': { digits: 10, format: '## #### ####' },    // Argentina
+        '+56': { digits: 9, format: '# #### ####' },      // Chile
+        '+57': { digits: 10, format: '### ### ####' },    // Colombia
+        '+51': { digits: 9, format: '# #### ####' },      // Perú
+        '+61': { digits: 9, format: '# #### ####' },      // Australia
+        '+81': { digits: 10, format: '##-#### ####' },    // Japón
+        '+86': { digits: 11, format: '### #### ####' },   // China
+        '+91': { digits: 10, format: '##### #####' },     // India
+        '+82': { digits: 10, format: '##-#### ####' }     // Corea del Sur
+    };
+
+    const paisSelect = document.getElementById('pais');
+    const telefonoInput = document.getElementById('telefono');
+    const prefijoDisplay = document.getElementById('prefijo-display');
+    const digitsInfo = document.getElementById('digits-info');
+    const prefijoHidden = document.getElementById('prefijo');
+
+    // Cargar valor inicial de país y prefijo
+    document.addEventListener('DOMContentLoaded', function() {
+        const inicial = prefijoHidden.value;
+        if (!inicial) {
+            paisSelect.selectedIndex = 0;
+            prefijoDisplay.textContent = '';
+            digitsInfo.textContent = '';
+        } else {
+            const config = countryFormats[inicial];
+            if (config) {
+                paisSelect.value = `${inicial}|${config.digits}`;
+                prefijoDisplay.textContent = inicial;
+                digitsInfo.textContent = `(${config.digits} dígitos)`;
+            }
+        }
+    });
+
+    // Actualizar formato cuando cambia el país
+    paisSelect.addEventListener('change', function() {
+        const [prefijo, digitos] = this.value.split('|');
+        const config = countryFormats[prefijo];
+        
+        prefijoHidden.value = prefijo;
+        prefijoDisplay.textContent = prefijo;
+        digitsInfo.textContent = `(${digitos} dígitos)`;
+        telefonoInput.value = '';
+        telefonoInput.maxLength = digitos + 10; // +10 para los separadores
+        telefonoInput.placeholder = generarPlaceholder(config.format);
+        telefonoInput.focus();
+    });
+
+    // Función para generar placeholder
+    function generarPlaceholder(format) {
+        return format.replace(/#/g, '0');
+    }
+
+    // Formatear teléfono según el país
+    telefonoInput.addEventListener('input', function(e) {
+        const [prefijo] = paisSelect.value.split('|');
+        const config = countryFormats[prefijo];
+        
+        let valor = e.target.value.replace(/[^0-9]/g, '').slice(0, config.digits);
+        let formatted = '';
+        let valorIndex = 0;
+        
+        for (let i = 0; i < config.format.length && valorIndex < valor.length; i++) {
+            if (config.format[i] === '#') {
+                formatted += valor[valorIndex];
+                valorIndex++;
+            } else {
+                formatted += config.format[i];
+            }
+        }
+        
+        e.target.value = formatted;
+    });
+
+    // Validaciones en tiempo real
+    function mostrarError(id, mensaje) {
+        document.getElementById('error-' + id).textContent = mensaje;
+    }
+
+    function limpiarError(id) {
+        document.getElementById('error-' + id).textContent = '';
+    }
+
+    // Validar nombre
+    document.getElementById('nombre').addEventListener('blur', function() {
+        let valor = this.value.trim();
+        if (valor) {
+            this.value = capitalize(valor);
+        }
+        if (!valor) {
+            mostrarError('nombre', 'El nombre es obligatorio.');
+        } else if (!/^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+$/.test(valor)) {
+            mostrarError('nombre', 'Solo se permiten letras y espacios.');
+        } else {
+            limpiarError('nombre');
+        }
+    });
+
+    // Validar apellidos
+    document.getElementById('apellidos').addEventListener('blur', function() {
+        let valor = this.value.trim();
+        if (valor) {
+            this.value = capitalize(valor);
+        }
+        if (!valor) {
+            mostrarError('apellidos', 'Los apellidos son obligatorios.');
+        } else if (!/^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+$/.test(valor)) {
+            mostrarError('apellidos', 'Solo se permiten letras y espacios.');
+        } else {
+            limpiarError('apellidos');
+        }
+    });
+
+    // Validar edad
+    document.getElementById('edad').addEventListener('blur', function() {
+        const valor = this.value.trim();
+        if (!valor) {
+            mostrarError('edad', 'La edad es obligatoria.');
+        } else {
+            const edad = parseInt(valor);
+            if (isNaN(edad) || edad < 1 || edad > 120) {
+                mostrarError('edad', 'Edad inválida.');
+            } else {
+                limpiarError('edad');
+            }
+        }
+    });
+
+    // Validar email
+    document.getElementById('email').addEventListener('blur', function() {
+        const valor = this.value.trim();
+        if (!valor) {
+            mostrarError('email', 'El email es obligatorio.');
+        } else if (!/^[\w\.-]+@[\w\.-]+\.\w+$/.test(valor)) {
+            mostrarError('email', 'Email inválido.');
+        } else {
+            limpiarError('email');
+        }
+    });
+
+    // Validar telefono
+    document.getElementById('telefono').addEventListener('blur', function() {
+        const valor = this.value.trim();
+        const telefonoLimpio = valor.replace(/[^0-9]/g, '');
+        if (!valor) {
+            mostrarError('telefono', 'El teléfono es obligatorio.');
+        } else if (!/^\d{8,15}$/.test(telefonoLimpio)) {
+            mostrarError('telefono', 'Teléfono inválido.');
+        } else {
+            limpiarError('telefono');
+        }
+    });
+
+    // Validar password
+    document.getElementById('password').addEventListener('blur', function() {
+        const valor = this.value;
+        if (!valor) {
+            mostrarError('password', 'La contraseña es obligatoria.');
+        } else if (valor.length < 8) {
+            mostrarError('password', 'Debe tener al menos 8 caracteres.');
+        } else if (!/[A-Za-z]/.test(valor)) {
+            mostrarError('password', 'Debe contener al menos una letra.');
+        } else if (!/\d/.test(valor)) {
+            mostrarError('password', 'Debe contener al menos un número.');
+        } else {
+            limpiarError('password');
+        }
+    });
+
+    // Función para capitalizar nombres
+    function capitalize(str) {
+        return str.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    // Validaciones en tiempo real
+    function mostrarError(id, mensaje) {
+        document.getElementById('error-' + id).textContent = mensaje;
+    }
+
+    function limpiarError(id) {
+        document.getElementById('error-' + id).textContent = '';
+    }
+
+    // Validar nombre
+    document.getElementById('nombre').addEventListener('blur', function() {
+        let valor = this.value.trim();
+        if (valor) {
+            this.value = capitalize(valor);
+        }
+        if (!valor) {
+            mostrarError('nombre', 'El nombre es obligatorio.');
+        } else if (!/^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+$/.test(valor)) {
+            mostrarError('nombre', 'Solo se permiten letras y espacios.');
+        } else {
+            limpiarError('nombre');
+        }
+    });
+
+    // Validar apellidos
+    document.getElementById('apellidos').addEventListener('blur', function() {
+        let valor = this.value.trim();
+        if (valor) {
+            this.value = capitalize(valor);
+        }
+        if (!valor) {
+            mostrarError('apellidos', 'Los apellidos son obligatorios.');
+        } else if (!/^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+$/.test(valor)) {
+            mostrarError('apellidos', 'Solo se permiten letras y espacios.');
+        } else {
+            limpiarError('apellidos');
+        }
+    });
+
+    // Validar edad
+    document.getElementById('edad').addEventListener('blur', function() {
+        const valor = this.value.trim();
+        if (!valor) {
+            mostrarError('edad', 'La edad es obligatoria.');
+        } else {
+            const edad = parseInt(valor);
+            if (isNaN(edad) || edad < 1 || edad > 120) {
+                mostrarError('edad', 'Edad inválida.');
+            } else {
+                limpiarError('edad');
+            }
+        }
+    });
+
+    // Validar email
+    document.getElementById('email').addEventListener('blur', function() {
+        const valor = this.value.trim();
+        if (!valor) {
+            mostrarError('email', 'El email es obligatorio.');
+        } else if (!/^[\w\.-]+@[\w\.-]+\.\w+$/.test(valor)) {
+            mostrarError('email', 'Email inválido.');
+        } else {
+            limpiarError('email');
+        }
+    });
+
+    // Validar telefono
+    document.getElementById('telefono').addEventListener('blur', function() {
+        const valor = this.value.trim();
+        const telefonoLimpio = valor.replace(/[^0-9]/g, '');
+        if (!valor) {
+            mostrarError('telefono', 'El teléfono es obligatorio.');
+        } else if (!/^\d{8,15}$/.test(telefonoLimpio)) {
+            mostrarError('telefono', 'Teléfono inválido.');
+        } else {
+            limpiarError('telefono');
+        }
+    });
+
+    // Validar password
+    document.getElementById('password').addEventListener('blur', function() {
+        const valor = this.value;
+        if (!valor) {
+            mostrarError('password', 'La contraseña es obligatoria.');
+        } else if (valor.length < 8) {
+            mostrarError('password', 'Debe tener al menos 8 caracteres.');
+        } else if (!/[A-Za-z]/.test(valor)) {
+            mostrarError('password', 'Debe contener al menos una letra.');
+        } else if (!/\d/.test(valor)) {
+            mostrarError('password', 'Debe contener al menos un número.');
+        } else {
+            limpiarError('password');
+        }
+    });
+</script>
+{% endblock %}

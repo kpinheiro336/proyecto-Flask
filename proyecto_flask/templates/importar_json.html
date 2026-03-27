@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Importar usuarios desde JSON</h2>
+<form method="post" enctype="multipart/form-data" class="form-container" style="max-width:400px;">
+    <div class="form-group">
+        <label for="archivo">Selecciona archivo JSON:</label>
+        <input type="file" name="archivo" id="archivo" accept="application/json" required>
+    </div>
+    <button type="submit" class="btn-primary">Importar</button>
+</form>
+{% endblock %}

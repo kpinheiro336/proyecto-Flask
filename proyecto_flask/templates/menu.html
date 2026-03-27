@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="menu-hero">
+    <h1>Panel de Administración</h1>
+    <p>Gestión de usuarios</p>
+    <div class="menu-links">
+        <a href="/registro" class="btn-primary">Registrar Usuario</a>
+        <a href="/usuarios" class="btn-secondary">Ver Usuarios</a>
+        <a href="/exportar_json" class="btn-primary" style="background:#6c757d;">Exportar JSON</a>
+        <a href="/importar_json" class="btn-secondary" style="background:#495057;">Importar JSON</a>
+    </div>
+</div>
+{% endblock %}
