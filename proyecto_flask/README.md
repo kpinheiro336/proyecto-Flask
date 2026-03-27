@@ -76,7 +76,7 @@ proyecto_flask/
 └── instance/               # Base de datos SQLite (autogenerada)
 ```
 
-## Mejoras respecto al Proyecto Final 2
+## Mejoras respecto al Proyecto Inicial
 
 - Uso de base de datos en vez de solo JSON
 - Validaciones avanzadas y mensajes claros
